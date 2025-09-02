@@ -51,11 +51,10 @@ def generate():
         model="gemini-2.5-flash",
         contents=prompt
     )
-    data_dict = parse_json_to_dict(response.text)
-    return {
-        "questions": jsonify(data_dict.values())
-    }
-     
+
+    data = parse_json_to_dict(response.text)
+    results = [{"answer":item["answer"],"question":item["question"]} for item in data.values()]
+    return jsonify(results)
     # print(data_dict.keys())
     # return response.text
 
