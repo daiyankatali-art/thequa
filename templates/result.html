@@ -2,24 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Questions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Review Page</h1>
-
-    <form method="GET" action=" / ">
-        <ol>
-       {% for a in ana %}
-            <p> Question<li>: {{a.question }} </li></p>
-            <p> Answer: {{a.answer }} </p>
-            <p> Your Answer: {{a.user_answer }} </p>
-            <p>  Analysis: {{a.analysis }} </p>
-       
-        <br>
-        {% endfor %}
-        </ol>
-
+    <div class="container large">
+        <div class="header">
+            <h1>Quiz Results</h1>
+            <p class="subtitle">Review your answers and see detailed analysis</p>
+        </div>
         
-    </form>
+        <div class="content">
+            {% for a in ana %}
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">{{ loop.index }}</div>
+                    <div class="question-text">{{ a.question }}</div>
+                </div>
+                
+                <div class="answer-section correct-answer">
+                    <div class="section-title">Correct Answer</div>
+                    <div class="answer-text">{{ a.answer }}</div>
+                </div>
+                
+                <div class="answer-section user-answer">
+                    <div class="section-title">Your Answer</div>
+                    <div class="answer-text">{{ a.user_answer }}</div>
+                </div>
+                
+                <div class="answer-section analysis">
+                    <div class="section-title">Analysis & Feedback</div>
+                    <div class="answer-text">{{ a.analysis }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="actions">
+            <a href="/" class="btn btn-primary">Take Another Quiz</a>
+        </div>
+    </div>
 </body>
 </html>
