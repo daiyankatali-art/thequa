@@ -1,15 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Results</title>
+    <meta charset="UTF-8">
+    <title>Questions</title>
 </head>
 <body>
-    <h1>Your Submitted Answers</h1>
-{% for q in questions %}
-        <div>
-           <p>  {{ q.question }} </p>
-        </div>
+    <h1>Review Page</h1>
+
+    <form method="GET" action=" / ">
+        <ol>
+       {% for a in ana %}
+            <p> Question<li>: {{a.question }} </li></p>
+            <p> Answer: {{a.answer }} </p>
+            <p> Your Answer: {{a.user_answer }} </p>
+            <p>  Analysis: {{a.analysis }} </p>
+       
         <br>
         {% endfor %}
+        </ol>
+
+        
+    </form>
 </body>
 </html>

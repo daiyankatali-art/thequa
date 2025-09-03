@@ -13,7 +13,7 @@
         <div>
            <p> <li> {{ q.question }} </li></p>
         
-            <textarea name="answer_{{ loop.index }}" placeholder="Type your answer here..."></textarea>
+            <textarea name="{{ loop.index }}" placeholder="Type your answer here..."></textarea>
         </div>
         <br>
         {% endfor %}
