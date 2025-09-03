@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Questions</title>
+</head>
+<body>
+    <h1>Answer the following questions:</h1>
+
+    <form method="POST" action="/submit-answers">
+        <ol>
+       {% for q in questions %}
+        <div>
+           <p> <li> {{ q.question }} </li></p>
+        
+            <textarea name="answer_{{ loop.index }}" placeholder="Type your answer here..."></textarea>
+        </div>
+        <br>
+        {% endfor %}
+        </ol>
+
+        <button type="submit">Submit Answers</button>
+    </form>
+</body>
+</html>

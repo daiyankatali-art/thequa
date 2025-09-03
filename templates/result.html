@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Results</title>
+</head>
+<body>
+    <h1>Your Submitted Answers</h1>
+{% for q in questions %}
+        <div>
+           <p>  {{ q.question }} </p>
+        </div>
+        <br>
+        {% endfor %}
+</body>
+</html>
