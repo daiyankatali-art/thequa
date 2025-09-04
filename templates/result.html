@@ -10,7 +10,7 @@
     <div class="container large">
         <div class="header">
             <h1>Quiz Results</h1>
-            <p class="subtitle">Review your answers and see detailed analysis</p>
+            <p class="subtitle">Review your answers and see detailed analysis with scores</p>
         </div>
         
         <div class="content">
@@ -19,6 +19,9 @@
                 <div class="question-header">
                     <div class="question-number">{{ loop.index }}</div>
                     <div class="question-text">{{ a.question }}</div>
+                    <div class="score-badge score-{{ (a.score // 2) if a.score <= 10 else 5 }}">
+                        {{ a.score }}/10
+                    </div>
                 </div>
                 
                 <div class="answer-section correct-answer">
