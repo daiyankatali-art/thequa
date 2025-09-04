@@ -4,6 +4,9 @@ import pprint
 import json
 import os
 from dotenv import load_dotenv
+from google.genai import types
+import httpx
+
 
 app = Flask(__name__)
 
@@ -23,11 +26,14 @@ def generate():
     email = request.form.get("email")
     topic = request.form.get("topic")
     amount = request.form.get("amount")
+    uploaded_file = request.files['file']  
+    file_bytes = uploaded_file.read()
+   
     
     client = genai.Client(api_key=API_KEY)
     
     prompt = f"""
-    Generate {amount} short, clear,simple and concise essay-type questions along with their answers (1–2 sentences each) on the topic: {topic}. do number them.
+    Generate {amount} short, clear,simple and concise essay-type questions along with their answers (1–2 sentences each) on the topic: {topic}.You can also accept a file: {file_bytes} and generate questions based on the received file. do number them.
     I want the response in this structure [
     {{"question": "Generated question 1?",  "answer": "Answer 1"}},
     {{"question": "Generated question 2?", "answer": "Answer 2"}},
@@ -35,9 +41,13 @@ def generate():
 ]
     I don't want it to have ```json I just want the json
     """
-    response = client.models.generate_content(
+
+    response = client.models.generate_content(  
         model="gemini-2.5-flash",
-        contents=prompt
+        contents=[ types.Part.from_bytes(
+        data=file_bytes,
+        mime_type='application/pdf',
+      ),prompt]
     )
     global questions_list
     questions_list = json.loads(response.text)

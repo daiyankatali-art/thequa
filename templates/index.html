@@ -11,7 +11,7 @@
             <h1>Quiz Generator</h1>
             <p class="subtitle">Create personalized quizzes on any topic with AI-powered questions</p>
             
-            <form action="/generate" method="post">
+            <form action="/generate" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
@@ -19,12 +19,13 @@
                 
                 <div class="form-group">
                     <label for="topic">Topic</label>
-                    <input type="text" id="topic" name="topic" placeholder="Enter your quiz topic" required>
+                    <input type="text" id="topic" name="topic" placeholder="Enter your quiz topic" >
                 </div>
                 
                 <div class="form-group">
                     <label for="amount">Number of Questions</label>
                     <input type="number" id="amount" name="amount" placeholder="5" min="1" max="15" required>
+                    <input type ="file" id="file" name="file" accept=".txt,.pdf,.docx,pptx" placeholder="Upload a pdf,word,text or powerpoint file to extract content" >
                 </div>
                 
                 <button type="submit" class="full-width">Generate Quiz</button>
