@@ -2,24 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Questions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Questions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Answer the following questions:</h1>
-
-    <form method="POST" action="/submit-answers">
-        <ol>
-       {% for q in questions %}
-        <div>
-           <p> <li> {{ q.question }} </li></p>
-        
-            <textarea name="{{ loop.index }}" placeholder="Type your answer here..."></textarea>
+    <div class="container">
+        <div class="header">
+            <h1>Answer the Questions</h1>
+            <p class="subtitle">Take your time and provide thoughtful answers</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
         </div>
-        <br>
-        {% endfor %}
-        </ol>
+        
+        <form method="POST" action="/submit-answers">
+            <div class="content">
+                {% for q in questions %}
+                <div class="question-item">
+                    <div class="question-number">{{ loop.index }}</div>
+                    <div class="question-text">{{ q.question }}</div>
+                    <textarea 
+                        name="{{ loop.index }}" 
+                        placeholder="Type your answer here..." 
+                        required
+                        oninput="updateProgress()"
+                    ></textarea>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="submit-section">
+                <button type="submit" id="submitBtn" disabled>Submit Answers</button>
+            </div>
+        </form>
+    </div>
 
-        <button type="submit">Submit Answers</button>
-    </form>
+    <script>
+        function updateProgress() {
+            const textareas = document.querySelectorAll('textarea');
+            const total = textareas.length;
+            let filled = 0;
+            
+            textareas.forEach(textarea => {
+                if (textarea.value.trim().length > 0) {
+                    filled++;
+                }
+            });
+            
+            const percentage = (filled / total) * 100;
+            document.getElementById('progressFill').style.width = percentage + '%';
+            
+            const submitBtn = document.getElementById('submitBtn');
+            if (filled === total) {
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.6';
+            }
+        }
+        
+        updateProgress();
+    </script>
 </body>
 </html>
