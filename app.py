@@ -146,33 +146,45 @@ def result():
     ana_prompt = f"""
 You are an expert evaluator for student quiz answers.
 
-TASK: For each question:
-1. Compare the user's answer with the correct answer.
-2. Give a score between 0–10:
+TASK:
+For each question, evaluate the student's answer and provide constructive feedback.
+
+STEPS:
+1. Compare the student's answer (refer to it as "your answer") with the correct answer.
+2. Assign a score from 0–10:
    - 10 = fully correct
    - 7–9 = mostly correct
    - 4–6 = partially correct
    - 1–3 = very weak
    - 0 = irrelevant or blank
-3. Give clear feedback: explain score, highlight correct parts, note missing/incorrect parts, suggest improvements.
+3. Provide clear, concise feedback directly to the student:
+   - Always use "Your answer" when referring to the student's response.
+   - Highlight correct points.
+   - Identify missing or incorrect parts.
+   - Suggest specific improvements.
+   - Use short, actionable sentences.
+   - Include positive reinforcement when possible.
 
 RULES:
 - Output valid JSON only.
-- No markdown or extra text.
-- Use this structure:
+- No markdown, code blocks, or extra text.
+- Use this structure exactly:
+
 [
-  {{{{
-    "question": "Question?",
-    "answer": "Correct Answer",
-    "user_answer": "User's Answer",
-    "score": 8,
-    "analysis": "Constructive feedback here."
-  }}}}
+  {{
+    "question": "Question text here",
+    "answer": "Correct answer text",
+    "user_answer": "Student's answer text",
+    "score": 0–10,
+    "analysis": "Constructive feedback, directly addressing the student in short, actionable sentences."
+  }}
 ]
 
 QUESTIONS: {questions_list}
 ANSWERS: {user_answers}
 """
+
+
 
     # ✅ Correct from_text usage
     contents = [types.Part.from_text(text=ana_prompt)]
