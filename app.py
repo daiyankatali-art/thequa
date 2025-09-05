@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, render_template_string
-
 from flask_mail import Mail, Message
 from google import genai
 from google.genai import types
@@ -8,8 +7,6 @@ import os
 import requests
 import re
 from dotenv import load_dotenv
-import smtplib
-from email.message import EmailMessage
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"  # needed for session storage
@@ -61,16 +58,13 @@ def extract_text_from_url(url):
         raise Exception(f"Error fetching/processing URL: {str(e)}")
 
 
-
-
 # ---------------------- HOME PAGE ----------------------
 @app.route('/')
 def home():
     return render_template('index.html')
 
 
-
-
+# ---------------------- GENERATE QUESTIONS ----------------------
 @app.route('/generate', methods=['POST'])
 def generate():
     email = request.form.get("email")
@@ -87,7 +81,6 @@ def generate():
     if not has_topic and not has_url and not has_file:
         return "❌ Please provide at least one of: a topic, a URL, or upload a file.", 400
 
-
     client = genai.Client(api_key=API_KEY)
     url_content, file_part = "", None
 
@@ -96,13 +89,11 @@ def generate():
             url = 'https://' + url
         url_content = extract_text_from_url(url)
 
-
     if has_file:
         file_bytes = uploaded_file.read()
         if len(file_bytes) == 0:
             return "❌ Uploaded file is empty", 400
         file_part = types.Part.from_bytes(data=file_bytes, mime_type='application/pdf')
-
 
     # Strict prompt for Gemini
     prompt = f"""
@@ -128,15 +119,13 @@ RULES:
     if has_file:
         prompt += f"\nFILE: {uploaded_file.filename} (content processed)"
 
-
+    # Prepare contents for Gemini
     contents = []
-
     if file_part:
-        contents.insert(0, file_part)
+        contents.append(file_part)
+    contents.append(types.Part.from_text(prompt))
 
-    # Generate questions using Gemini
     try:
-
         response = client.models.generate_content(model="gemini-2.5-flash", contents=contents)
         raw_text = response.text
         global questions_list
@@ -145,7 +134,6 @@ RULES:
         return render_template("question.html", questions=questions_list, email=email)
 
     except json.JSONDecodeError:
-
         return "⚠️ AI response was not valid JSON.", 500
     except Exception as e:
         return f"⚠️ Error: {str(e)}", 500
@@ -191,8 +179,11 @@ QUESTIONS: {questions_list}
 ANSWERS: {user_answers}
 """
 
+    # Gemini expects contents as Part objects
+    contents = [types.Part.from_text(ana_prompt)]
+
     try:
-        response_ana = client.models.generate_content(model="gemini-2.5-flash", contents=ana_prompt)
+        response_ana = client.models.generate_content(model="gemini-2.5-flash", contents=contents)
         raw_text = response_ana.text.strip()
         if not raw_text:
             return "⚠️ AI returned empty analysis. Try again.", 500
@@ -206,7 +197,7 @@ ANSWERS: {user_answers}
         return f"⚠️ Error: {str(e)}", 500
 
 
-
+# ---------------------- SEND RESULTS VIA EMAIL ----------------------
 @app.route('/send-results', methods=['POST'])
 def send_results():
     email = request.form.get("email")
@@ -218,7 +209,7 @@ def send_results():
     try:
         ana = json.loads(results_json)
         msg = Message(subject="Your Quiz Results", recipients=[email])
-    
+
         # Render HTML email similar to result.html
         html_content = render_template_string("""
 <!DOCTYPE html>
