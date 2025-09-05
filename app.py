@@ -164,13 +164,13 @@ RULES:
 - Use exactly this structure:
 
 [
-  {{
+  {{{{
     "question": "Question?",
     "answer": "Correct Answer",
     "user_answer": "User's Answer",
     "score": 8,
     "analysis": "Your answer mentioned memory management, which is correct, but you missed the part about process scheduling. To improve, explain how the OS handles both resources and processes."
-  }}
+  }}}}
 ]
 
 QUESTIONS: {questions_list}
