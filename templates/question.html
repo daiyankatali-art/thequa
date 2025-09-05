@@ -18,6 +18,7 @@
         
         <form method="POST" action="/submit-answers">
             <div class="content">
+                <input type="hidden" name="email" value="{{ email }}">
                 {% for q in questions %}
                 <div class="question-item">
                     <div class="question-number">{{ loop.index }}</div>

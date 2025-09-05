@@ -44,6 +44,13 @@
         
         <div class="actions">
             <a href="/" class="btn btn-primary">Take Another Quiz</a>
+
+            <!-- Button to send results to email -->
+            <form action="/send-results" method="POST" style="display:inline;">
+                <input type="hidden" name="email" value="{{ email }}">
+                <input type="hidden" name="results" value='{{ ana|tojson }}'>
+                <button type="submit" class="btn btn-secondary">Send Results to Email</button>
+            </form>
         </div>
     </div>
 </body>
