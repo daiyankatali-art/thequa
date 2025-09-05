@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, redirect, url_for,render_template_string
+from flask import Flask, jsonify, render_template, request, redirect, url_for, render_template_string
 from flask_mail import Mail, Message
 from google import genai
 from google.genai import types
@@ -8,14 +8,11 @@ import requests
 import re
 from dotenv import load_dotenv
 
-
 app = Flask(__name__)
 
 # Load environment variables
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
-#print("📧 MAIL USER:", os.getenv("MAIL_USERNAME"))
-#print("🔑 MAIL PASS (first 4 chars):", str(os.getenv("MAIL_PASSWORD"))[:4])  # don’t show full password
 
 # Email configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -143,7 +140,7 @@ def result():
     user_email = request.form.get("email")
     user_answers = {k: v for k, v in request.form.items() if k != "email"}
 
-    # Strict evaluation prompt
+    # Fixed strict evaluation prompt with escaped braces
     ana_prompt = f"""
 You are a strict but helpful evaluator for student quiz answers.
 
@@ -180,7 +177,6 @@ QUESTIONS: {questions_list}
 ANSWERS: {user_answers}
 """
 
-
     try:
         response_ana = client.models.generate_content(model="gemini-2.5-flash", contents=ana_prompt)
         ana = json.loads(response_ana.text)
@@ -193,8 +189,6 @@ ANSWERS: {user_answers}
         return f"⚠️ Error: {str(e)}", 500
 
 
-from flask import render_template_string
-
 @app.route('/send-results', methods=['POST'])
 def send_results():
     email = request.form.get("email")
@@ -206,7 +200,7 @@ def send_results():
     try:
         ana = json.loads(results_json)
         msg = Message(subject="Your Quiz Results", recipients=[email])
-
+    
         # Render HTML email similar to result.html
         html_content = render_template_string("""
 <!DOCTYPE html>
@@ -267,7 +261,6 @@ def send_results():
 </html>
 """, ana=ana)
 
-
         msg.html = html_content  # Set HTML content for email
         mail.send(msg)
         print(f"✅ Results sent to {email}")
@@ -278,7 +271,6 @@ def send_results():
     except Exception as e:
         print("❌ Error sending email:", e)
         return "⚠️ Failed to send results", 500
-
 
 
 if __name__ == '__main__':
