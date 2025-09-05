@@ -8,6 +8,7 @@ import requests
 import re
 from dotenv import load_dotenv
 
+
 app = Flask(__name__)
 
 # Load environment variables
