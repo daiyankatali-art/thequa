@@ -78,7 +78,7 @@ h1 {
 
 /* Form Styles */
 .form-group {
-    margin-bottom: 24px;
+    margin-bottom: 28px;
 }
 
 label {
@@ -91,6 +91,7 @@ label {
     letter-spacing: 0.5px;
 }
 
+/* Uniform styling for ALL input types */
 input {
     width: 100%;
     padding: 16px 20px;
@@ -99,6 +100,7 @@ input {
     font-size: 1rem;
     transition: all 0.3s ease;
     background: #fafafa;
+    margin-bottom: 4px;
 }
 
 input:focus {
@@ -111,6 +113,11 @@ input:focus {
 
 input::placeholder {
     color: #a0aec0;
+}
+
+/* File input cursor pointer */
+input[type="file"] {
+    cursor: pointer;
 }
 
 textarea {
@@ -167,6 +174,7 @@ button:disabled {
 
 button.full-width {
     width: 100%;
+    margin-top: 16px;
 }
 
 /* Question Styles */
@@ -204,6 +212,7 @@ button.full-width {
     display: flex;
     align-items: center;
     margin-bottom: 20px;
+    gap: 16px;
 }
 
 .question-number {
@@ -310,6 +319,61 @@ button.full-width {
     font-style: italic;
 }
 
+/* Score Badge Styles */
+.score-badge {
+    background: #e2e8f0;
+    color: #4a5568;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+/* Score-based color coding */
+.score-0, .score-1 {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    color: white;
+}
+
+.score-2 {
+    background: linear-gradient(135deg, #dd6b20 0%, #c05621 100%);
+    color: white;
+}
+
+.score-3 {
+    background: linear-gradient(135deg, #ecc94b 0%, #d69e2e 100%);
+    color: white;
+}
+
+.score-4 {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+}
+
+.score-5 {
+    background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+    color: white;
+}
+
+/* Progress Bar Styles */
+.progress-bar {
+    background: rgba(255, 255, 255, 0.2);
+    height: 6px;
+    border-radius: 3px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: white;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
 /* Action Buttons */
 .actions,
 .submit-section {
@@ -391,11 +455,17 @@ button.full-width {
         flex-direction: column;
         align-items: flex-start;
         text-align: left;
+        gap: 12px;
     }
     
     .question-card .question-number {
         margin-bottom: 12px;
         margin-right: 0;
+    }
+
+    .score-badge {
+        margin-left: 0;
+        align-self: flex-start;
     }
 
     .btn {
@@ -417,62 +487,9 @@ button.full-width {
         font-size: 2rem;
     }
 }
-/* Score Badge Styles - Add this to your existing style.css */
-
-.score-badge {
-    background: #e2e8f0;
-    color: #4a5568;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    margin-left: auto;
-    white-space: nowrap;
+.section-title::before {
+    content: none;
 }
-
-/* Score-based color coding */
-.score-0, .score-1 {
-    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-    color: white;
-}
-
-.score-2 {
-    background: linear-gradient(135deg, #dd6b20 0%, #c05621 100%);
-    color: white;
-}
-
-.score-3 {
-    background: linear-gradient(135deg, #ecc94b 0%, #d69e2e 100%);
-    color: white;
-}
-
-.score-4 {
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-    color: white;
-}
-
-.score-5 {
-    background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
-    color: white;
-}
-
-/* Update question header to accommodate score badge */
-.question-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    gap: 16px;
-}
-
-@media (max-width: 768px) {
-    .question-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-    
-    .score-badge {
-        margin-left: 0;
-        align-self: flex-start;
-    }
+.content.centered h1 {
+    text-align: center;
 }

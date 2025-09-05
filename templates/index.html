@@ -25,10 +25,18 @@
                 <div class="form-group">
                     <label for="amount">Number of Questions</label>
                     <input type="number" id="amount" name="amount" placeholder="5" min="1" max="15" required>
-                    <input type ="file" id="file" name="file" accept=".txt,.pdf,.docx,pptx" placeholder="Upload a pdf,word,text or powerpoint file to extract content" >
+                </div>
+
+                <div class="form-group">
+                    <label for="file">Upload File: only pdf</label>
+                    <input type="file" id="file" name="file" accept=".pdf" placeholder="Upload a pdf to extract content" >
+                </div>
+
+                <div class="form-group">
+                    <label for="url">Website URL</label>
                     <input type="url" id="url" name="url" placeholder="Enter a URL to extract content" >
                 </div>
-                
+
                 <button type="submit" class="full-width">Generate Quiz</button>
             </form>
         </div>
