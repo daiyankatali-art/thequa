@@ -160,39 +160,30 @@ def result():
     user_email = request.form.get("email")
     user_answers = {k: v for k, v in request.form.items() if k != "email"}
 
-    # Fixed strict evaluation prompt with escaped braces
     ana_prompt = f"""
-
-You are a strict but helpful evaluator for student quiz answers.
+You are a strict evaluator for student quiz answers.
 
 TASK: For each question:
 1. Compare the user's answer with the correct answer.
-2. Give a score between 0–10.
+2. Give a score between 0–10:
    - 10 = fully correct
-   - 7–9 = mostly correct but with small mistakes
-   - 4–6 = partially correct, missing key details
-   - 1–3 = very weak, vague, or incomplete
-   - 0 = irrelevant, blank, or nonsensical
-3. Write clear, constructive feedback that:
-   - Explains why the score was given
-   - Highlights what the user got right (if anything)
-   - Explains what was missing or incorrect
-   - Suggests how the user could improve their answer next time
+   - 7–9 = mostly correct
+   - 4–6 = partially correct
+   - 1–3 = very weak
+   - 0 = irrelevant or blank
+3. Give clear feedback: explain score, highlight correct parts, note missing/incorrect parts, suggest improvements.
 
 RULES:
-- Output must be valid JSON only.
-- No markdown, no code blocks, no explanations outside the JSON.
-- Use exactly this structure:
+- Output valid JSON only.
+- No markdown or extra text.
+- Use this structure:
 [
-
   {{{{
     "question": "Question?",
     "answer": "Correct Answer",
     "user_answer": "User's Answer",
-
     "score": 8,
-
-    "analysis": "Your answer mentioned memory management, which is correct, but you missed the part about process scheduling. To improve, explain how the OS handles both resources and processes."
+    "analysis": "Constructive feedback here."
   }}}}
 ]
 
@@ -202,27 +193,18 @@ ANSWERS: {user_answers}
 
     try:
         response_ana = client.models.generate_content(model="gemini-2.5-flash", contents=ana_prompt)
-        ana = json.loads(response_ana.text)
-
-    try:
-        response_ana = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=ana_prompt
-        )
         raw_text = response_ana.text.strip()
         if not raw_text:
             return "⚠️ AI returned empty analysis. Try again.", 500
 
         ana = json.loads(raw_text)
-        session['analysis'] = ana  # save for emailing
-
-
+        return render_template("result.html", ana=ana, email=user_email)
 
     except json.JSONDecodeError:
-
         return "⚠️ AI analysis was not valid JSON.", 500
     except Exception as e:
         return f"⚠️ Error: {str(e)}", 500
+
 
 
 @app.route('/send-results', methods=['POST'])
