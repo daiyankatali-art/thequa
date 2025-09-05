@@ -9,7 +9,7 @@ import re
 from dotenv import load_dotenv
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key_here"  # needed for session storage
+app.secret_key = "your_secret_key_here"
 
 # Load environment variables
 load_dotenv()
@@ -27,7 +27,6 @@ mail = Mail(app)
 
 # Global variable
 questions_list = []
-
 
 def extract_text_from_url(url):
     """Extract text from a webpage."""
@@ -57,12 +56,10 @@ def extract_text_from_url(url):
     except Exception as e:
         raise Exception(f"Error fetching/processing URL: {str(e)}")
 
-
 # ---------------------- HOME PAGE ----------------------
 @app.route('/')
 def home():
     return render_template('index.html')
-
 
 # ---------------------- GENERATE QUESTIONS ----------------------
 @app.route('/generate', methods=['POST'])
@@ -123,21 +120,19 @@ RULES:
     contents = []
     if file_part:
         contents.append(file_part)
-    contents.append(types.Part.from_text(prompt))
+    # ✅ Correct from_text usage
+    contents.append(types.Part.from_text(text=prompt))
 
     try:
         response = client.models.generate_content(model="gemini-2.5-flash", contents=contents)
         raw_text = response.text
         global questions_list
         questions_list = json.loads(raw_text)
-
         return render_template("question.html", questions=questions_list, email=email)
-
     except json.JSONDecodeError:
         return "⚠️ AI response was not valid JSON.", 500
     except Exception as e:
         return f"⚠️ Error: {str(e)}", 500
-
 
 # ---------------------- SUBMIT ANSWERS ----------------------
 @app.route('/submit-answers', methods=['POST'])
@@ -149,7 +144,7 @@ def result():
     user_answers = {k: v for k, v in request.form.items() if k != "email"}
 
     ana_prompt = f"""
-You are a strict evaluator for student quiz answers.
+You are an expert evaluator for student quiz answers.
 
 TASK: For each question:
 1. Compare the user's answer with the correct answer.
@@ -179,8 +174,8 @@ QUESTIONS: {questions_list}
 ANSWERS: {user_answers}
 """
 
-    # Gemini expects contents as Part objects
-    contents = [types.Part.from_text(ana_prompt)]
+    # ✅ Correct from_text usage
+    contents = [types.Part.from_text(text=ana_prompt)]
 
     try:
         response_ana = client.models.generate_content(model="gemini-2.5-flash", contents=contents)
@@ -190,12 +185,10 @@ ANSWERS: {user_answers}
 
         ana = json.loads(raw_text)
         return render_template("result.html", ana=ana, email=user_email)
-
     except json.JSONDecodeError:
         return "⚠️ AI analysis was not valid JSON.", 500
     except Exception as e:
         return f"⚠️ Error: {str(e)}", 500
-
 
 # ---------------------- SEND RESULTS VIA EMAIL ----------------------
 @app.route('/send-results', methods=['POST'])
@@ -210,7 +203,6 @@ def send_results():
         ana = json.loads(results_json)
         msg = Message(subject="Your Quiz Results", recipients=[email])
 
-        # Render HTML email similar to result.html
         html_content = render_template_string("""
 <!DOCTYPE html>
 <html>
@@ -270,7 +262,7 @@ def send_results():
 </html>
 """, ana=ana)
 
-        msg.html = html_content  # Set HTML content for email
+        msg.html = html_content
         mail.send(msg)
         print(f"✅ Results sent to {email}")
         return html_content
@@ -280,7 +272,6 @@ def send_results():
     except Exception as e:
         print("❌ Error sending email:", e)
         return "⚠️ Failed to send results", 500
-
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
