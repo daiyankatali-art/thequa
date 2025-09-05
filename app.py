@@ -204,13 +204,6 @@ ANSWERS: {user_answers}
         response_ana = client.models.generate_content(model="gemini-2.5-flash", contents=ana_prompt)
         ana = json.loads(response_ana.text)
 
-    "analysis": "Detailed feedback"
-  }},
-  ...
-]
-Do NOT include markdown or code blocks.
-"""
-
     try:
         response_ana = client.models.generate_content(
             model="gemini-2.5-flash",
