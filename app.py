@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 import smtplib
 from email.message import EmailMessage
 
+
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"  # needed for session storage
 
