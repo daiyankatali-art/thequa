@@ -1,5 +1,5 @@
+from flask import Flask, jsonify, render_template, request, redirect, url_for, render_template_string
 
-from flask import Flask, jsonify, render_template, request, redirect, url_for,render_template_string
 from flask_mail import Mail, Message
 from google import genai
 from google.genai import types
@@ -11,15 +11,12 @@ from dotenv import load_dotenv
 import smtplib
 from email.message import EmailMessage
 
-
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"  # needed for session storage
 
 # Load environment variables
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
-#print("📧 MAIL USER:", os.getenv("MAIL_USERNAME"))
-#print("🔑 MAIL PASS (first 4 chars):", str(os.getenv("MAIL_PASSWORD"))[:4])  # don’t show full password
 
 # Email configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -163,7 +160,7 @@ def result():
     user_email = request.form.get("email")
     user_answers = {k: v for k, v in request.form.items() if k != "email"}
 
-    # Strict evaluation prompt
+    # Fixed strict evaluation prompt with escaped braces
     ana_prompt = f"""
 
 You are a strict but helpful evaluator for student quiz answers.
@@ -187,20 +184,21 @@ RULES:
 - No markdown, no code blocks, no explanations outside the JSON.
 - Use exactly this structure:
 [
-  {{
-    "question": "Original question",
-    "answer": "Correct answer",
-    "user_answer": "User answer",
+
+  {{{{
+    "question": "Question?",
+    "answer": "Correct Answer",
+    "user_answer": "User's Answer",
+
     "score": 8,
 
     "analysis": "Your answer mentioned memory management, which is correct, but you missed the part about process scheduling. To improve, explain how the OS handles both resources and processes."
-  }}
+  }}}}
 ]
 
 QUESTIONS: {questions_list}
 ANSWERS: {user_answers}
 """
-
 
     try:
         response_ana = client.models.generate_content(model="gemini-2.5-flash", contents=ana_prompt)
@@ -234,8 +232,6 @@ Do NOT include markdown or code blocks.
         return f"⚠️ Error: {str(e)}", 500
 
 
-from flask import render_template_string
-
 @app.route('/send-results', methods=['POST'])
 def send_results():
     email = request.form.get("email")
@@ -247,7 +243,7 @@ def send_results():
     try:
         ana = json.loads(results_json)
         msg = Message(subject="Your Quiz Results", recipients=[email])
-
+    
         # Render HTML email similar to result.html
         html_content = render_template_string("""
 <!DOCTYPE html>
@@ -308,7 +304,6 @@ def send_results():
 </html>
 """, ana=ana)
 
-
         msg.html = html_content  # Set HTML content for email
         mail.send(msg)
         print(f"✅ Results sent to {email}")
@@ -321,48 +316,5 @@ def send_results():
         return "⚠️ Failed to send results", 500
 
 
-
-# ---------------------- SEND EMAIL ----------------------
-@app.route('/send-email' , methods=['POST'])
-def send_email():
-    user_email = session.get("user_email")
-    ana = session.get("analysis")
-
-    if not user_email or not ana:
-        return "❌ No email or results available to send.", 400
-
-    # Build email content
-    results_text = "Your Quiz Results\n\n"
-    for q in ana:
-        results_text += f"Question: {q['question']}\n"
-        results_text += f"Correct Answer: {q['answer']}\n"
-        results_text += f"Your Answer: {q['user_answer']}\n"
-        results_text += f"Analysis: {q['analysis']}\n\n"
-
-    try:
-        sender_email = os.getenv("SENDER_EMAIL")
-        app_password = os.getenv("APP_PASSWORD")
-
-        msg = EmailMessage()
-        msg.set_content(results_text)
-        msg['Subject'] = "Your Quiz Results"
-        msg['From'] = sender_email
-        msg['To'] = user_email
-
-        # Send email
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            smtp.login(sender_email, app_password)
-            smtp.send_message(msg)
-
-        message = f"✅ Results have been sent to {user_email}"
-
-
-    except Exception as e:
-         message = f"❌ Failed to send email: {str(e)}"
-
-
-    return render_template("email_sent.html", message=message)
-
-# ---------------------- MAIN ----------------------
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
