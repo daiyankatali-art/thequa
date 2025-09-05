@@ -41,8 +41,17 @@
             </div>
             {% endfor %}
         </div>
+
+        <!-- Email sending section -->
+        <div class="email-section">
+            <h2>📩 Send Results to Your Email</h2>
+            <form action="/send-email" method="post">
+                <button type="submit" class="btn btn-primary">Send Results to email</button>
+            </form>
+        </div>
         
         <div class="actions">
+
             <a href="/" class="btn btn-primary">Take Another Quiz</a>
 
             <!-- Button to send results to email -->
@@ -51,6 +60,7 @@
                 <input type="hidden" name="results" value='{{ ana|tojson }}'>
                 <button type="submit" class="btn btn-secondary">Send Results to Email</button>
             </form>
+
         </div>
     </div>
 </body>
